@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Candidate } from "@/lib/types";
-import { updateStatus } from "@/lib/storage";
+import { addAuditLog, addNotification, updateStatus } from "@/lib/storage";
+import { useToast } from "@/lib/toast";
 import { CircleAlert, CircleCheck, ShieldCheck } from "lucide-react";
 
 interface Props {
@@ -16,9 +18,39 @@ function getScoreColor(score: number) {
 }
 
 export default function RightPanel({ candidate, onStatusChange }: Props) {
-    function handleStatus(status: Candidate["status"]) {
+    const [pendingStatus, setPendingStatus] = useState<Candidate["status"] | null>(null);
+    const [justSavedStatus, setJustSavedStatus] = useState<Candidate["status"] | null>(null);
+    const { toast } = useToast();
+
+    async function handleStatus(status: Candidate["status"]) {
+        if (pendingStatus) return;
+        setPendingStatus(status);
+
+        await new Promise((resolve) => setTimeout(resolve, 280));
         updateStatus(candidate.id, status);
         onStatusChange(candidate.id, status);
+
+        const statusText = status === "approved" ? "ОДОБРЕН" : status === "interview" ? "НА ИНТЕРВЬЮ" : "НА РАССМОТРЕНИИ";
+        const notifType = status === "approved" ? "top" : status === "interview" ? "info" : "info";
+
+        addNotification({
+            type: notifType,
+            title: "Статус кандидата обновлён",
+            body: `${candidate.full_name} переведён в статус: ${statusText}.`,
+            candidateId: candidate.id,
+            route: `/candidates/${candidate.id}`,
+        });
+
+        addAuditLog({
+            action: "status_changed",
+            message: `Изменён статус ${candidate.full_name}: ${statusText}.`,
+            candidateId: candidate.id,
+        });
+
+        setPendingStatus(null);
+        setJustSavedStatus(status);
+        setTimeout(() => setJustSavedStatus((current) => (current === status ? null : current)), 1200);
+        toast(`Статус обновлён: ${statusText}`, status === "approved" ? "success" : "info");
     }
 
     const bullets = candidate.rationale
@@ -50,7 +82,7 @@ export default function RightPanel({ candidate, onStatusChange }: Props) {
 
                 <div className="detail-label">ЛИЧНОЕ ЭССЕ</div>
                 <div className="detail-essay">
-                    <p>"{candidate.essay.slice(0, 110)}..."</p>
+                    <p>&ldquo;{candidate.essay.slice(0, 110)}...&rdquo;</p>
                 </div>
 
                 <div className="detail-label detail-rationale-title">ОБОСНОВАНИЕ ОТ INVISION AI</div>
@@ -67,16 +99,18 @@ export default function RightPanel({ candidate, onStatusChange }: Props) {
                     <button
                         type="button"
                         onClick={() => handleStatus("approved")}
-                        className="detail-btn detail-btn-approve"
+                        disabled={Boolean(pendingStatus)}
+                        className={pendingStatus === "approved" ? "detail-btn detail-btn-approve detail-btn-busy" : justSavedStatus === "approved" ? "detail-btn detail-btn-approve detail-btn-done" : "detail-btn detail-btn-approve"}
                     >
-                        ОДОБРИТЬ
+                        {pendingStatus === "approved" ? "СОХРАНЕНИЕ..." : justSavedStatus === "approved" ? "СОХРАНЕНО ✓" : "ОДОБРИТЬ"}
                     </button>
                     <button
                         type="button"
                         onClick={() => handleStatus("interview")}
-                        className={candidate.status === "interview" ? "detail-btn detail-btn-secondary detail-btn-secondary-active" : "detail-btn detail-btn-secondary"}
+                        disabled={Boolean(pendingStatus)}
+                        className={pendingStatus === "interview" ? "detail-btn detail-btn-secondary detail-btn-busy" : justSavedStatus === "interview" ? "detail-btn detail-btn-secondary detail-btn-done" : candidate.status === "interview" ? "detail-btn detail-btn-secondary detail-btn-secondary-active" : "detail-btn detail-btn-secondary"}
                     >
-                        НА ИНТЕРВЬЮ
+                        {pendingStatus === "interview" ? "СОХРАНЕНИЕ..." : justSavedStatus === "interview" ? "СОХРАНЕНО ✓" : "НА ИНТЕРВЬЮ"}
                     </button>
                 </div>
             </section>

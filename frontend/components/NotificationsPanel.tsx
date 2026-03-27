@@ -1,49 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Bell, X, CheckCheck, Gem, ShieldAlert, UserPlus, Info } from "lucide-react";
-
-interface Notification {
-    id: number;
-    type: "top" | "risk" | "new" | "info";
-    title: string;
-    body: string;
-    time: string;
-    read: boolean;
-}
-
-const INITIAL: Notification[] = [
-    {
-        id: 1, type: "top", read: false,
-        title: "Новый ТОП ТАЛАНТ",
-        body: "Berik Saparov получил оценку 98 — рекомендован к одобрению.",
-        time: "2 мин назад",
-    },
-    {
-        id: 2, type: "risk", read: false,
-        title: "Риск отказа",
-        body: "Alima Zhakupova — оценка 42. Рекомендуется дополнительная проверка.",
-        time: "15 мин назад",
-    },
-    {
-        id: 3, type: "new", read: false,
-        title: "Новый кандидат добавлен",
-        body: "Aibek Moldabekov успешно проанализирован системой inVision AI.",
-        time: "1 час назад",
-    },
-    {
-        id: 4, type: "info", read: true,
-        title: "Система обновлена",
-        body: "Модель Llama 3.3 70B обновлена. Точность оценки улучшена на 4%.",
-        time: "3 часа назад",
-    },
-    {
-        id: 5, type: "info", read: true,
-        title: "Экспорт завершён",
-        body: "Отчёт по 12 кандидатам успешно экспортирован в PDF.",
-        time: "Вчера",
-    },
-];
+import { getNotifications, markAllNotificationsRead, markNotificationRead, removeNotification } from "@/lib/storage";
+import { AppNotification } from "@/lib/types";
 
 const TYPE_ICON = {
     top: <Gem size={14} strokeWidth={2.2} style={{ color: "#c8f000" }} />,
@@ -58,29 +20,70 @@ const TYPE_DOT: Record<string, string> = {
 
 export default function NotificationsPanel() {
     const [open, setOpen] = useState(false);
-    const [items, setItems] = useState<Notification[]>(INITIAL);
+    const [items, setItems] = useState<AppNotification[]>([]);
     const ref = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     const unread = items.filter((n) => !n.read).length;
+
+    function timeAgo(iso: string) {
+        const diff = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diff / (60 * 1000));
+        if (mins < 1) return "только что";
+        if (mins < 60) return `${mins} мин назад`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours} ч назад`;
+        const days = Math.floor(hours / 24);
+        return `${days} д назад`;
+    }
+
+    function syncItems() {
+        setItems(getNotifications());
+    }
+
+    useEffect(() => {
+        syncItems();
+    }, []);
 
     useEffect(() => {
         function handler(e: MouseEvent) {
             if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
         }
+
+        function storageHandler() {
+            syncItems();
+        }
+
         document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
+        window.addEventListener("storage", storageHandler);
+        window.addEventListener("invisionu:storage", storageHandler as EventListener);
+        return () => {
+            document.removeEventListener("mousedown", handler);
+            window.removeEventListener("storage", storageHandler);
+            window.removeEventListener("invisionu:storage", storageHandler as EventListener);
+        };
     }, []);
 
     function markAll() {
-        setItems((p) => p.map((n) => ({ ...n, read: true })));
+        markAllNotificationsRead();
+        syncItems();
     }
 
-    function markOne(id: number) {
-        setItems((p) => p.map((n) => n.id === id ? { ...n, read: true } : n));
+    function markOne(id: string) {
+        markNotificationRead(id);
+        syncItems();
     }
 
-    function dismiss(id: number) {
-        setItems((p) => p.filter((n) => n.id !== id));
+    function dismiss(id: string) {
+        removeNotification(id);
+        syncItems();
+    }
+
+    function openNotification(item: AppNotification) {
+        markOne(item.id);
+        const route = item.route || (item.candidateId ? `/candidates/${item.candidateId}` : "/notifications");
+        setOpen(false);
+        router.push(route);
     }
 
     return (
@@ -174,7 +177,7 @@ export default function NotificationsPanel() {
                             items.map((n) => (
                                 <div
                                     key={n.id}
-                                    onClick={() => markOne(n.id)}
+                                    onClick={() => openNotification(n)}
                                     style={{
                                         display: "flex", gap: 12, padding: "12px 16px",
                                         borderBottom: "1px solid #1a1c20",
@@ -222,7 +225,7 @@ export default function NotificationsPanel() {
                                             fontFamily: "Rajdhani,sans-serif", fontSize: 11,
                                             color: "#374151", marginTop: 4, display: "block",
                                         }}>
-                                            {n.time}
+                                            {timeAgo(n.created_at)}
                                         </span>
                                     </div>
 
@@ -253,7 +256,7 @@ export default function NotificationsPanel() {
                             borderTop: "1px solid #1e2126",
                             textAlign: "center",
                         }}>
-                            <a
+                            <Link
                                 href="/notifications"
                                 onClick={() => setOpen(false)}
                                 style={{
@@ -267,7 +270,7 @@ export default function NotificationsPanel() {
                                 onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#4b5563"; }}
                             >
                                 Посмотреть все уведомления →
-                            </a>
+                            </Link>
                         </div>
                     )}
                 </div>

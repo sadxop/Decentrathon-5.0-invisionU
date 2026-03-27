@@ -1,13 +1,6 @@
 "use client";
 
-import { Users, BarChart2, FileText, Settings } from "lucide-react";
-
-const navItems = [
-    { icon: "⊞", active: true },
-    { icon: Users, active: false },
-    { icon: BarChart2, active: false },
-    { icon: FileText, active: false },
-];
+import { Settings } from "lucide-react";
 
 export default function Sidebar() {
     return (

@@ -1,64 +1,88 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, ArrowLeft, CheckCheck, Gem, ShieldAlert, UserPlus, Info, X, Filter } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Bell, ArrowLeft, CheckCheck, Gem, ShieldAlert, UserPlus, Info, X } from "lucide-react";
+import { getNotifications, markAllNotificationsRead, markNotificationRead, removeNotification } from "@/lib/storage";
+import { AppNotification, NotificationType } from "@/lib/types";
 
-interface Notification {
-    id: number;
-    type: "top" | "risk" | "new" | "info";
-    title: string;
-    body: string;
-    time: string;
-    read: boolean;
-}
-
-const ALL_NOTIFICATIONS: Notification[] = [
-    { id: 1, type: "top", read: false, title: "Новый ТОП ТАЛАНТ", body: "Berik Saparov получил оценку 98 — рекомендован к одобрению.", time: "2 мин назад" },
-    { id: 2, type: "risk", read: false, title: "Риск отказа", body: "Alima Zhakupova — оценка 42. Рекомендуется дополнительная проверка.", time: "15 мин назад" },
-    { id: 3, type: "new", read: false, title: "Новый кандидат добавлен", body: "Aibek Moldabekov успешно проанализирован системой inVision AI.", time: "1 час назад" },
-    { id: 4, type: "info", read: true, title: "Система обновлена", body: "Модель Llama 3.3 70B обновлена. Точность оценки улучшена на 4%.", time: "3 часа назад" },
-    { id: 5, type: "info", read: true, title: "Экспорт завершён", body: "Отчёт по 12 кандидатам успешно экспортирован в PDF.", time: "Вчера" },
-    { id: 6, type: "top", read: true, title: "Кандидат одобрен", body: "Berik Saparov переведён в статус ОДОБРЕН комиссией.", time: "Вчера" },
-    { id: 7, type: "new", read: true, title: "Новый кандидат добавлен", body: "Dinara Bekova успешно проанализирована. Оценка: 76.", time: "2 дня назад" },
-    { id: 8, type: "risk", read: true, title: "Низкая оценка", body: "Marat Seitkali получил оценку 38. Рекомендован к отклонению.", time: "3 дня назад" },
-    { id: 9, type: "info", read: true, title: "Резервная копия создана", body: "Данные системы успешно сохранены в облачное хранилище.", time: "Неделю назад" },
-    { id: 10, type: "info", read: true, title: "Новый администратор", body: "Пользователь admin2@invisionu.kz добавлен в систему.", time: "Неделю назад" },
-];
-
-const TYPE_ICON: Record<string, React.ReactNode> = {
+const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
     top: <Gem size={16} strokeWidth={2.2} style={{ color: "#c8f000" }} />,
     risk: <ShieldAlert size={16} strokeWidth={2.2} style={{ color: "#f06c3f" }} />,
     new: <UserPlus size={16} strokeWidth={2.2} style={{ color: "#60a5fa" }} />,
     info: <Info size={16} strokeWidth={2.2} style={{ color: "#8d9098" }} />,
 };
 
-const TYPE_DOT: Record<string, string> = {
-    top: "#c8f000", risk: "#f06c3f", new: "#60a5fa", info: "#4b5563",
+const TYPE_DOT: Record<NotificationType, string> = {
+    top: "#c8f000",
+    risk: "#f06c3f",
+    new: "#60a5fa",
+    info: "#4b5563",
 };
 
-const TYPE_LABEL: Record<string, string> = {
-    top: "ТОП ТАЛАНТ", risk: "РИСК", new: "НОВЫЙ", info: "ИНФО",
+const TYPE_LABEL: Record<NotificationType, string> = {
+    top: "ТОП ТАЛАНТ",
+    risk: "РИСК",
+    new: "НОВЫЙ",
+    info: "ИНФО",
 };
 
-type Filter = "all" | "unread" | "top" | "risk" | "new" | "info";
+type Filter = "all" | "unread" | NotificationType;
+
+function timeAgo(iso: string) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / (60 * 1000));
+    if (mins < 1) return "только что";
+    if (mins < 60) return `${mins} мин назад`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours} ч назад`;
+    const days = Math.floor(hours / 24);
+    return `${days} д назад`;
+}
 
 export default function NotificationsPage() {
-    const [items, setItems] = useState<Notification[]>(ALL_NOTIFICATIONS);
+    const [items, setItems] = useState<AppNotification[]>([]);
     const [filter, setFilter] = useState<Filter>("all");
+    const router = useRouter();
+
+    function syncItems() {
+        setItems(getNotifications());
+    }
+
+    useEffect(() => {
+        syncItems();
+    }, []);
+
+    useEffect(() => {
+        function storageHandler() {
+            syncItems();
+        }
+
+        window.addEventListener("storage", storageHandler);
+        window.addEventListener("invisionu:storage", storageHandler as EventListener);
+        return () => {
+            window.removeEventListener("storage", storageHandler);
+            window.removeEventListener("invisionu:storage", storageHandler as EventListener);
+        };
+    }, []);
 
     const unread = items.filter((n) => !n.read).length;
 
     function markAll() {
-        setItems((p) => p.map((n) => ({ ...n, read: true })));
+        markAllNotificationsRead();
+        syncItems();
     }
 
-    function dismiss(id: number) {
-        setItems((p) => p.filter((n) => n.id !== id));
+    function dismiss(id: string) {
+        removeNotification(id);
+        syncItems();
     }
 
-    function markOne(id: number) {
-        setItems((p) => p.map((n) => n.id === id ? { ...n, read: true } : n));
+    function openNotification(item: AppNotification) {
+        markNotificationRead(item.id);
+        const route = item.route || (item.candidateId ? `/candidates/${item.candidateId}` : "/notifications");
+        router.push(route);
     }
 
     const filtered = items.filter((n) => {
@@ -85,15 +109,12 @@ export default function NotificationsPage() {
             padding: "32px 24px",
         }}>
             <div style={{ maxWidth: 720, margin: "0 auto" }}>
-
-                {/* Back + Header */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
                     <Link href="/" style={{
                         display: "flex", alignItems: "center", justifyContent: "center",
                         width: 36, height: 36, borderRadius: 10,
                         border: "1px solid #252830", background: "rgba(255,255,255,0.03)",
                         color: "#8d9098", textDecoration: "none",
-                        transition: "all 0.2s ease",
                     }}>
                         <ArrowLeft size={16} strokeWidth={2} />
                     </Link>
@@ -124,7 +145,6 @@ export default function NotificationsPage() {
                     )}
                 </div>
 
-                {/* Filter tabs */}
                 <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
                     {FILTERS.map(({ key, label }) => (
                         <button
@@ -137,7 +157,6 @@ export default function NotificationsPage() {
                                 background: filter === key ? "#c8f000" : "transparent",
                                 borderColor: filter === key ? "#c8f000" : "#252830",
                                 color: filter === key ? "#0d1008" : "#6b7280",
-                                transition: "all 0.15s ease",
                             }}
                         >
                             {label}
@@ -145,7 +164,6 @@ export default function NotificationsPage() {
                     ))}
                 </div>
 
-                {/* List */}
                 <div style={{
                     background: "linear-gradient(160deg,#141618,#0f1114)",
                     border: "1px solid #252830",
@@ -160,17 +178,14 @@ export default function NotificationsPage() {
                         filtered.map((n, idx) => (
                             <div
                                 key={n.id}
-                                onClick={() => markOne(n.id)}
+                                onClick={() => openNotification(n)}
                                 style={{
                                     display: "flex", gap: 14, padding: "16px 20px",
                                     borderBottom: idx < filtered.length - 1 ? "1px solid #1a1c20" : "none",
                                     background: n.read ? "transparent" : "rgba(200,240,0,0.025)",
-                                    cursor: "pointer", transition: "background 0.15s ease",
+                                    cursor: "pointer",
                                 }}
-                                onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.025)"; }}
-                                onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = n.read ? "transparent" : "rgba(200,240,0,0.025)"; }}
                             >
-                                {/* Icon */}
                                 <div style={{
                                     width: 40, height: 40, borderRadius: 10, flexShrink: 0,
                                     background: "rgba(255,255,255,0.04)", border: "1px solid #252830",
@@ -180,7 +195,6 @@ export default function NotificationsPage() {
                                     {TYPE_ICON[n.type]}
                                 </div>
 
-                                {/* Content */}
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                         <span style={{ fontFamily: "Rajdhani,sans-serif", fontWeight: 700, fontSize: 15, color: "#e5e7eb" }}>
@@ -204,11 +218,10 @@ export default function NotificationsPage() {
                                         {n.body}
                                     </p>
                                     <span style={{ fontFamily: "Rajdhani,sans-serif", fontSize: 11, color: "#374151" }}>
-                                        {n.time}
+                                        {timeAgo(n.created_at)}
                                     </span>
                                 </div>
 
-                                {/* Dismiss */}
                                 <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); dismiss(n.id); }}
@@ -216,10 +229,8 @@ export default function NotificationsPage() {
                                         background: "none", border: "none", cursor: "pointer",
                                         color: "#374151", padding: 4, flexShrink: 0,
                                         display: "flex", alignItems: "flex-start",
-                                        borderRadius: 6, transition: "all 0.15s ease",
+                                        borderRadius: 6,
                                     }}
-                                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#9ca3af"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)"; }}
-                                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#374151"; (e.currentTarget as HTMLButtonElement).style.background = "none"; }}
                                 >
                                     <X size={14} strokeWidth={2} />
                                 </button>

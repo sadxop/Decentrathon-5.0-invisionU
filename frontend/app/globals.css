@@ -771,6 +771,19 @@ input {
     background: rgba(255, 255, 255, 0.08);
 }
 
+.detail-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.86;
+}
+
+.detail-btn-busy {
+    opacity: 0.92;
+}
+
+.detail-btn-done {
+    box-shadow: 0 0 0 1px rgba(184, 245, 6, 0.28) inset, 0 0 18px rgba(184, 245, 6, 0.22);
+}
+
 .fairness-title-row {
     display: flex;
     justify-content: space-between;
