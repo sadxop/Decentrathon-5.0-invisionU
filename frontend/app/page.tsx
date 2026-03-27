@@ -7,6 +7,7 @@ import { getCandidates } from "@/lib/storage";
 import { Candidate } from "@/lib/types";
 import AddCandidateModal from "@/components/AddCandidateModal";
 import RightPanel from "@/components/RightPanel";
+import ProfileMenu from "@/components/ProfileMenu";
 
 const DEMO_CANDIDATES: Candidate[] = [
     {
@@ -161,9 +162,7 @@ export default function Dashboard() {
                         <button type="button" className="topbar-icon-btn" aria-label="help">
                             <CircleHelp size={17} strokeWidth={2.1} />
                         </button>
-                        <button type="button" className="profile-pill" aria-label="profile">
-                            <Image src="https://randomuser.me/api/portraits/men/11.jpg" alt="profile" width={34} height={34} />
-                        </button>
+                        <ProfileMenu />
                     </div>
                 </header>
 
