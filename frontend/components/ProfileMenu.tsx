@@ -3,14 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
-    User, Settings, Bell, Shield, LogOut,
+    User, Settings, Shield, LogOut,
     ChevronRight, Sun, Moon, HelpCircle
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 
 const STATIC_ITEMS = [
     { icon: User, label: "Мой профиль", sub: "Администратор" },
-    { icon: Bell, label: "Уведомления", sub: "3 новых" },
     { icon: Settings, label: "Настройки системы", sub: null },
     { icon: Shield, label: "Безопасность", sub: null },
     { icon: HelpCircle, label: "Помощь и поддержка", sub: null },
@@ -178,7 +177,7 @@ export default function ProfileMenu() {
                             subColor={sub}
                             chevronColor="transparent"
                             hoverBg={isDark ? "rgba(240,108,63,0.08)" : "rgba(217,79,30,0.06)"}
-                            onClick={() => setOpen(false)}
+                            onClick={() => { setOpen(false); window.location.href = "/login"; }}
                         />
                     </div>
                 </div>
