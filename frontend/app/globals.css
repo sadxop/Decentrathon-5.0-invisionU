@@ -4,7 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ── DARK THEME (default) ── */
+:root,
+[data-theme="dark"] {
     --bg: #060708;
     --panel: #111214;
     --panel-2: #141518;
@@ -16,6 +18,74 @@
     --neon: #b8f506;
     --neon-soft: rgba(184, 245, 6, 0.25);
     --risk: #f06c3f;
+
+    /* component tokens */
+    --topbar-bg: rgba(8, 9, 11, 0.94);
+    --rail-bg: linear-gradient(180deg, rgba(10, 11, 13, 0.96), rgba(8, 9, 11, 0.99));
+    --row-bg: linear-gradient(90deg, rgba(22, 23, 26, 0.88), rgba(19, 21, 24, 0.88));
+    --row-selected-bg: linear-gradient(90deg, rgba(24, 26, 28, 0.96), rgba(20, 22, 25, 0.92));
+    --card-bg: rgba(18, 20, 23, 0.96);
+    --detail-col-bg: linear-gradient(180deg, rgba(16, 18, 22, 0.93), rgba(14, 16, 19, 0.97));
+    --input-bg: #0f1114;
+    --input-border: #25272b;
+    --shell-bg: rgba(5, 6, 8, 0.86);
+    --hero-white: #f4f5f7;
+    --score-shadow: rgba(184, 245, 6, 0.18);
+    --dropdown-bg: linear-gradient(160deg, #141618, #0f1114);
+    --dropdown-border: #252830;
+    --dropdown-item-hover: rgba(200, 240, 0, 0.06);
+    --dropdown-logout-hover: rgba(240, 108, 63, 0.08);
+    --avatar-border: #30343a;
+    --header-row-bg: rgba(16, 18, 22, 0.8);
+    --header-row-border: #1b1d21;
+    --explainability-bg: linear-gradient(120deg, rgba(19, 20, 23, 0.96), rgba(22, 27, 17, 0.86));
+    --explainability-border: #23262d;
+    --essay-bg: rgba(12, 14, 18, 0.82);
+    --essay-border: #252830;
+    --noise-gradient: radial-gradient(circle at 30% 80%, rgba(184, 245, 6, 0.05) 0 16%, transparent 53%);
+    --body-gradient:
+        radial-gradient(1100px 700px at 83% 17%, rgba(184, 245, 6, 0.09) 0%, rgba(184, 245, 6, 0.01) 35%, rgba(6, 7, 8, 0) 55%),
+        linear-gradient(145deg, #060708 0%, #080a0c 55%, #040506 100%);
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+    --bg: #f0f2f5;
+    --panel: #ffffff;
+    --panel-2: #f7f8fa;
+    --panel-soft: #eef0f3;
+    --line: #dde0e6;
+    --text: #0f1117;
+    --muted-text: #5a6070;
+    --subtle-text: #8a909e;
+    --neon: #5a9e00;
+    --neon-soft: rgba(90, 158, 0, 0.15);
+    --risk: #d94f1e;
+
+    --topbar-bg: rgba(255, 255, 255, 0.97);
+    --rail-bg: linear-gradient(180deg, #ffffff, #f5f6f8);
+    --row-bg: linear-gradient(90deg, #ffffff, #fafbfc);
+    --row-selected-bg: linear-gradient(90deg, #f0f7e6, #edf5e0);
+    --card-bg: #ffffff;
+    --detail-col-bg: linear-gradient(180deg, #ffffff, #f8f9fb);
+    --input-bg: #f5f6f8;
+    --input-border: #dde0e6;
+    --shell-bg: #f0f2f5;
+    --hero-white: #0f1117;
+    --score-shadow: rgba(90, 158, 0, 0.12);
+    --dropdown-bg: linear-gradient(160deg, #ffffff, #f8f9fb);
+    --dropdown-border: #dde0e6;
+    --dropdown-item-hover: rgba(90, 158, 0, 0.06);
+    --dropdown-logout-hover: rgba(217, 79, 30, 0.06);
+    --avatar-border: #c8d4b8;
+    --header-row-bg: rgba(240, 242, 245, 0.9);
+    --header-row-border: #dde0e6;
+    --explainability-bg: linear-gradient(120deg, #f5f9ee, #eef5e4);
+    --explainability-border: #c8d8a8;
+    --essay-bg: #f8f9fb;
+    --essay-border: #dde0e6;
+    --noise-gradient: none;
+    --body-gradient: #f0f2f5;
 }
 
 * {
@@ -26,13 +96,12 @@
 
 body {
     min-height: 100vh;
-    background:
-        radial-gradient(1100px 700px at 83% 17%, rgba(184, 245, 6, 0.09) 0%, rgba(184, 245, 6, 0.01) 35%, rgba(6, 7, 8, 0) 55%),
-        linear-gradient(145deg, #060708 0%, #080a0c 55%, #040506 100%);
+    background: var(--body-gradient);
     color: var(--text);
     font-family: "Sora", "Segoe UI", sans-serif;
     font-size: 14px;
     line-height: 1.45;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 button,
@@ -59,14 +128,15 @@ input {
     height: 100vh;
     max-height: 100vh;
     overflow: hidden;
-    background: rgba(5, 6, 8, 0.86);
+    background: var(--shell-bg);
+    transition: background 0.3s ease;
 }
 
 .command-center-noise {
     pointer-events: none;
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle at 30% 80%, rgba(184, 245, 6, 0.05) 0 16%, transparent 53%);
+    background-image: var(--noise-gradient);
     opacity: 0.35;
 }
 
@@ -74,7 +144,7 @@ input {
     width: 84px;
     height: 100vh;
     border-right: 1px solid var(--line);
-    background: linear-gradient(180deg, rgba(10, 11, 13, 0.96), rgba(8, 9, 11, 0.99));
+    background: var(--rail-bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -83,6 +153,7 @@ input {
     z-index: 2;
     flex-shrink: 0;
     overflow: hidden;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .rail-logo {
@@ -163,7 +234,8 @@ input {
     justify-content: space-between;
     gap: 20px;
     padding: 0 26px;
-    background: rgba(8, 9, 11, 0.94);
+    background: var(--topbar-bg);
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .topbar-title-wrap {
@@ -206,11 +278,12 @@ input {
     height: 52px;
     border: 1px solid var(--line);
     border-radius: 13px;
-    background: #0f1114;
+    background: var(--input-bg);
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 0 14px;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .searchbox input {
@@ -218,12 +291,12 @@ input {
     outline: 0;
     width: 100%;
     background: transparent;
-    color: #dddfe5;
+    color: var(--text);
     font-size: 14px;
 }
 
 .searchbox input::placeholder {
-    color: #686d75;
+    color: var(--subtle-text);
 }
 
 .searchbox-icon {
@@ -328,11 +401,12 @@ input {
     display: grid;
     grid-template-columns: 2.2fr 1fr 1fr 1.1fr;
     gap: 12px;
-    border: 1px solid #1b1d21;
+    border: 1px solid var(--header-row-border);
     border-radius: 14px;
-    background: rgba(16, 18, 22, 0.8);
+    background: var(--header-row-bg);
     padding: 16px 24px;
     margin-bottom: 14px;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .candidate-header-row span {
@@ -355,9 +429,9 @@ input {
 
 .candidate-row {
     width: 100%;
-    border: 1px solid #20242a;
+    border: 1px solid var(--line);
     border-radius: 14px;
-    background: linear-gradient(90deg, rgba(22, 23, 26, 0.88), rgba(19, 21, 24, 0.88));
+    background: var(--row-bg);
     padding: 18px 24px;
     display: grid;
     grid-template-columns: 2.2fr 1fr 1fr 1.1fr;
@@ -371,14 +445,14 @@ input {
 }
 
 .candidate-row:hover {
-    border-color: #2b2e34;
+    border-color: var(--muted-text);
     transform: translateY(-1px);
 }
 
 .candidate-row-selected {
     border-color: rgba(184, 245, 6, 0.3);
     box-shadow: inset 0 0 0 1px rgba(184, 245, 6, 0.08);
-    background: linear-gradient(90deg, rgba(24, 26, 28, 0.96), rgba(20, 22, 25, 0.92));
+    background: var(--row-selected-bg);
 }
 
 .candidate-name-wrap {
@@ -520,13 +594,14 @@ input {
 }
 
 .detail-column {
-    border: 1px solid #202228;
+    border: 1px solid var(--line);
     border-radius: 16px;
-    background: linear-gradient(180deg, rgba(16, 18, 22, 0.93), rgba(14, 16, 19, 0.97));
+    background: var(--detail-col-bg);
     padding: 10px;
     overflow-y: auto;
     min-width: 0;
     min-height: 0;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .rightpanel-stack {
@@ -539,13 +614,15 @@ input {
 .candidate-detail-card,
 .fairness-card {
     border-radius: 14px;
-    border: 1px solid #23262d;
-    background: rgba(18, 20, 23, 0.96);
+    border: 1px solid var(--line);
+    background: var(--card-bg);
     padding: 18px;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .explainability-card {
-    background: linear-gradient(120deg, rgba(19, 20, 23, 0.96), rgba(22, 27, 17, 0.86));
+    background: var(--explainability-bg);
+    border-color: var(--explainability-border);
 }
 
 .explainability-title-row {
@@ -617,11 +694,12 @@ input {
 
 .detail-essay {
     border-radius: 12px;
-    border: 1px solid #252830;
-    background: rgba(12, 14, 18, 0.82);
+    border: 1px solid var(--essay-border);
+    background: var(--essay-bg);
     padding: 12px 14px;
     margin-bottom: 14px;
     border-left: 2px solid var(--neon);
+    transition: background 0.3s ease;
 }
 
 .detail-essay p {
