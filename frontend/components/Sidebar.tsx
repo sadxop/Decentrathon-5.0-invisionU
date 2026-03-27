@@ -27,8 +27,8 @@ export default function Sidebar() {
                     <button
                         key={i}
                         className={`w-full h-8 rounded flex items-center justify-center text-sm transition-colors ${active
-                                ? "bg-primary/20 text-primary border border-primary/30"
-                                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                            ? "bg-primary/20 text-primary border border-primary/30"
+                            : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                             }`}
                     >
                         {label}

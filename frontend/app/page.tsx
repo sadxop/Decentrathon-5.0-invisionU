@@ -13,12 +13,12 @@ const DEMO_CANDIDATES: Candidate[] = [
         id: "demo-1",
         full_name: "Berik Saparov",
         city: "Kyzylorda",
-        essay: "I aim to revolutionize digital logistics in Kazakhstan by leveraging distributed systems and resilient cloud architecture.",
-        achievements: "15+ public repositories, architecture mentorship, OSS maintainer",
+        essay: "Моя цель — революционизировать цифровую логистику в Казахстане, используя распределённые системы и отказоустойчивую облачную архитектуру.",
+        achievements: "15+ публичных репозиториев, менторство по архитектуре, мейнтейнер OSS",
         experience_years: 8,
         total_score: 98,
-        leadership_label: "TOP TALENT",
-        rationale: "Exceptional proficiency in architectural patterns and strong evidence of long-term ownership across complex product domains.",
+        leadership_label: "ТОП ТАЛАНТ",
+        rationale: "Исключительное владение архитектурными паттернами и убедительные свидетельства долгосрочного владения сложными продуктовыми доменами.",
         status: "approved",
         created_at: new Date().toISOString(),
     },
@@ -26,12 +26,12 @@ const DEMO_CANDIDATES: Candidate[] = [
         id: "demo-2",
         full_name: "Aibek Moldabekov",
         city: "Astana",
-        essay: "I build calm, scalable user experiences and cross-functional design systems with measurable business outcomes.",
-        achievements: "Scaled product design for 2M+ MAU, led discovery workshops",
+        essay: "Я создаю спокойные, масштабируемые пользовательские интерфейсы и кросс-функциональные дизайн-системы с измеримыми бизнес-результатами.",
+        achievements: "Масштабировал продуктовый дизайн для 2M+ MAU, проводил воркшопы по discovery",
         experience_years: 6,
         total_score: 85,
-        leadership_label: "ACTIVE",
-        rationale: "Strong product thinking and communication profile with consistent delivery quality and healthy iteration discipline.",
+        leadership_label: "АКТИВНЫЙ",
+        rationale: "Сильное продуктовое мышление и коммуникативный профиль с последовательным качеством поставки и здоровой дисциплиной итераций.",
         status: "pending",
         created_at: new Date().toISOString(),
     },
@@ -39,12 +39,12 @@ const DEMO_CANDIDATES: Candidate[] = [
         id: "demo-3",
         full_name: "Alima Zhakupova",
         city: "Almaty",
-        essay: "I am focused on ethical AI and practical data science solutions for real public-sector constraints in Central Asia.",
-        achievements: "ML research awards, civic data platform contributions",
+        essay: "Я сосредоточена на этичном ИИ и практических решениях в области data science для реальных ограничений государственного сектора в Центральной Азии.",
+        achievements: "Награды за ML-исследования, вклад в гражданские платформы данных",
         experience_years: 4,
         total_score: 42,
-        leadership_label: "GENAI RISK",
-        rationale: "Current profile indicates a skills mismatch for this specific role and limited evidence of architecture-level ownership.",
+        leadership_label: "РИСК",
+        rationale: "Текущий профиль указывает на несоответствие навыков для данной роли и ограниченные свидетельства владения на уровне архитектуры.",
         status: "pending",
         created_at: new Date().toISOString(),
     },
@@ -59,12 +59,12 @@ function getAvatarUrl(id: string) {
 
 function getBadge(score: number, label: string) {
     if (score >= 75) {
-        return { text: label || "TOP TALENT", tone: "top" as const, icon: <Gem size={12} strokeWidth={2.2} /> };
+        return { text: label || "ТОП ТАЛАНТ", tone: "top" as const, icon: <Gem size={12} strokeWidth={2.2} /> };
     }
     if (score >= 50) {
-        return { text: label || "ACTIVE", tone: "mid" as const, icon: null };
+        return { text: label || "АКТИВНЫЙ", tone: "mid" as const, icon: null };
     }
-    return { text: label || "GENAI RISK", tone: "risk" as const, icon: <ShieldAlert size={12} strokeWidth={2.25} /> };
+    return { text: label || "РИСК", tone: "risk" as const, icon: <ShieldAlert size={12} strokeWidth={2.25} /> };
 }
 
 function getScoreColor(score: number) {
@@ -105,10 +105,10 @@ export default function Dashboard() {
     );
 
     function getRole(c: Candidate) {
-        if (c.id === "demo-1") return "Senior Full-stack Engineer";
-        if (c.id === "demo-2") return "Lead Product Designer";
-        if (c.id === "demo-3") return "Data Scientist";
-        return `${c.experience_years} years experience`;
+        if (c.id === "demo-1") return "Старший Full-stack инженер";
+        if (c.id === "demo-2") return "Ведущий продуктовый дизайнер";
+        if (c.id === "demo-3") return "Специалист по данным";
+        return `${c.experience_years} лет опыта`;
     }
 
     if (!ready) return null;
@@ -118,7 +118,7 @@ export default function Dashboard() {
             <div className="command-center-noise" />
 
             <aside className="command-rail">
-                <div className="rail-logo">iU</div>
+                <button type="button" className="rail-logo" onClick={() => { setCandidates([]); setSelected(null); }} title="inVision U — Главная">iU</button>
 
                 <nav className="rail-nav" aria-label="sections">
                     {[
@@ -143,16 +143,16 @@ export default function Dashboard() {
                     <div className="topbar-title-wrap">
                         <div className="topbar-title">inVision U Talent Command Center</div>
                         <div className="topbar-separator" />
-                        <div className="topbar-subtitle">Admin Dashboard</div>
+                        <div className="topbar-subtitle">Панель администратора</div>
                     </div>
 
                     <div className="topbar-actions">
-                        <label className="searchbox" aria-label="Search talents">
+                        <label className="searchbox" aria-label="Поиск кандидатов">
                             <Search size={15} strokeWidth={2} className="searchbox-icon" />
                             <input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Search talents..."
+                                placeholder="Поиск кандидатов..."
                             />
                         </label>
                         <button type="button" className="topbar-icon-btn" aria-label="notifications">
@@ -176,23 +176,23 @@ export default function Dashboard() {
                             </h1>
                             <p>
                                 <span className="hero-bullet">●</span>
-                                AI-powered candidate assessment (powered by Llama 3)
+                                AI-оценка кандидатов на базе ИИ (Llama 3)
                             </p>
                         </div>
 
                         <div className="candidate-header-row">
-                            <span>CANDIDATE</span>
-                            <span>CITY</span>
-                            <span>AI SCORE</span>
-                            <span>CLASSIFICATION</span>
+                            <span>КАНДИДАТ</span>
+                            <span>ГОРОД</span>
+                            <span>ОЦЕНКА ИИ</span>
+                            <span>КЛАССИФИКАЦИЯ</span>
                         </div>
 
                         <div className="candidate-list">
                             {filtered.length === 0 ? (
                                 <div className="candidate-empty">
                                     {candidates.length === 0
-                                        ? "No candidates yet. Add the first profile."
-                                        : "No results for current search."}
+                                        ? "Нет кандидатов. Добавьте первый профиль."
+                                        : "Ничего не найдено по запросу."}
                                 </div>
                             ) : (
                                 filtered.map((c, idx) => {
@@ -248,10 +248,10 @@ export default function Dashboard() {
                                 onClick={() => setShowModal(true)}
                                 className="add-candidate-btn"
                             >
-                                + Add Candidate
+                                + Добавить кандидата
                             </button>
                             <div className="list-meta">
-                                Total: {candidates.length} | AI 75+: {candidates.filter((c) => c.total_score >= 75).length}
+                                Всего: {candidates.length} | AI 75+: {candidates.filter((c) => c.total_score >= 75).length}
                             </div>
                         </div>
                     </section>
@@ -263,7 +263,7 @@ export default function Dashboard() {
                                 onStatusChange={handleStatusChange}
                             />
                         ) : (
-                            <div className="candidate-empty">Select a candidate from the list.</div>
+                            <div className="candidate-empty">Выберите кандидата из списка.</div>
                         )}
                     </aside>
                 </section>

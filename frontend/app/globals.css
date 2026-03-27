@@ -56,9 +56,10 @@ input {
 .command-center-shell {
     position: relative;
     display: flex;
-    min-height: 100vh;
-    background: rgba(5, 6, 8, 0.86);
+    height: 100vh;
+    max-height: 100vh;
     overflow: hidden;
+    background: rgba(5, 6, 8, 0.86);
 }
 
 .command-center-noise {
@@ -71,6 +72,7 @@ input {
 
 .command-rail {
     width: 84px;
+    height: 100vh;
     border-right: 1px solid var(--line);
     background: linear-gradient(180deg, rgba(10, 11, 13, 0.96), rgba(8, 9, 11, 0.99));
     display: flex;
@@ -79,21 +81,31 @@ input {
     padding: 16px 12px;
     gap: 14px;
     z-index: 2;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .rail-logo {
-    width: 100%;
-    height: 38px;
+    width: 52px;
+    height: 52px;
     background: transparent;
     color: var(--neon);
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 800;
     font-family: "Rajdhani", sans-serif;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding-left: 4px;
+    justify-content: center;
     letter-spacing: -0.01em;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+.rail-logo:hover {
+    opacity: 0.8;
 }
 
 .rail-nav {
@@ -139,6 +151,8 @@ input {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .topbar {
@@ -258,8 +272,9 @@ input {
     grid-template-columns: minmax(620px, 1fr) 520px;
     gap: 20px;
     padding: 26px;
-    min-height: 0;
     flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .candidate-column {
@@ -267,6 +282,7 @@ input {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    overflow: hidden;
 }
 
 .hero-block {
@@ -332,6 +348,7 @@ input {
     flex-direction: column;
     gap: 12px;
     overflow-y: auto;
+    flex: 1;
     min-height: 0;
     padding-right: 4px;
 }
@@ -509,6 +526,7 @@ input {
     padding: 10px;
     overflow-y: auto;
     min-width: 0;
+    min-height: 0;
 }
 
 .rightpanel-stack {
@@ -779,64 +797,165 @@ input {
 
 @media (max-width: 1440px) {
     .content-grid {
-        grid-template-columns: minmax(430px, 1fr) 470px;
-        gap: 18px;
+        grid-template-columns: minmax(400px, 1fr) 420px;
+        gap: 16px;
+        padding: 20px;
     }
 
     .topbar-title {
-        font-size: 20px;
-    }
-
-    .topbar-subtitle {
-        font-size: 16px;
-    }
-
-    .detail-btn {
-        font-size: 17px;
-        height: 50px;
-    }
-
-    .hero-block h1 {
-        font-size: clamp(32px, 3.5vw, 52px);
-    }
-
-    .hero-block p {
         font-size: 15px;
     }
 
+    .topbar-subtitle {
+        font-size: 13px;
+    }
+
+    .searchbox {
+        width: min(280px, 35vw);
+    }
+
+    .hero-block h1 {
+        font-size: clamp(28px, 3vw, 48px);
+    }
+
+    .hero-block p {
+        font-size: 14px;
+    }
+
     .candidate-name {
-        font-size: 24px;
-    }
-
-    .candidate-role {
-        font-size: 17px;
-    }
-
-    .candidate-city {
         font-size: 20px;
     }
 
+    .candidate-role {
+        font-size: 14px;
+    }
+
+    .candidate-city {
+        font-size: 14px;
+    }
+
     .candidate-score {
-        font-size: 42px;
+        font-size: 38px;
+    }
+
+    .candidate-avatar {
+        width: 46px;
+        height: 46px;
+    }
+
+    .candidate-row {
+        padding: 14px 18px;
+    }
+
+    .detail-btn {
+        font-size: 16px;
+        height: 48px;
     }
 
     .explainability-card p,
     .detail-essay p,
     .detail-bullet span {
-        font-size: 16px;
-    }
-
-    .detail-btn {
-        font-size: 18px;
-        height: 50px;
+        font-size: 15px;
     }
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: minmax(340px, 1fr) 360px;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .topbar-title {
+        font-size: 13px;
+    }
+
+    .topbar-separator {
+        display: none;
+    }
+
+    .topbar-subtitle {
+        display: none;
+    }
+
+    .searchbox {
+        width: min(220px, 30vw);
+        height: 42px;
+    }
+
+    .hero-block h1 {
+        font-size: clamp(24px, 2.8vw, 40px);
+    }
+
+    .candidate-score {
+        font-size: 32px;
+    }
+
+    .candidate-name {
+        font-size: 17px;
+    }
+
+    .candidate-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .candidate-row {
+        padding: 12px 14px;
+    }
+
+    .candidate-header-row {
+        padding: 12px 14px;
+    }
+
+    .detail-btn {
+        font-size: 14px;
+        height: 44px;
+    }
+
+    .rail-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .command-rail {
+        width: 72px;
+    }
+}
+
+@media (max-width: 960px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        padding: 12px;
+        gap: 12px;
+        overflow-y: auto;
+    }
+
+    .candidate-column {
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .candidate-list {
+        max-height: 38vh;
+        overflow-y: auto;
+    }
+
+    .detail-column {
+        max-height: 44vh;
+        overflow-y: auto;
+    }
+
     .topbar {
         height: auto;
-        padding: 14px;
+        padding: 10px 14px;
         flex-wrap: wrap;
+        gap: 10px;
     }
 
     .topbar-title-wrap {
@@ -848,22 +967,14 @@ input {
     }
 
     .searchbox {
-        width: 100%;
         flex: 1;
-    }
-
-    .content-grid {
-        grid-template-columns: 1fr;
-        padding: 14px;
-    }
-
-    .detail-column {
-        max-height: 48vh;
+        width: auto;
+        height: 40px;
     }
 
     .candidate-header-row,
     .candidate-row {
-        grid-template-columns: 1.7fr 1fr 0.8fr;
+        grid-template-columns: 2fr 1fr 0.8fr;
     }
 
     .candidate-header-row span:last-child,
@@ -871,45 +982,88 @@ input {
         display: none;
     }
 
+    .hero-block h1 {
+        font-size: clamp(22px, 5vw, 36px);
+    }
+
     .list-footer {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
     }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
     .command-center-shell {
         flex-direction: column;
     }
 
     .command-rail {
         width: 100%;
-        height: 72px;
+        height: 60px;
         flex-direction: row;
         justify-content: space-between;
-        padding: 10px 12px;
+        padding: 0 14px;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
     }
 
     .rail-logo {
-        width: 38px;
-        height: 38px;
-        font-size: 20px;
+        width: 36px;
+        height: 36px;
+        font-size: 22px;
+        margin-bottom: 0;
     }
 
     .rail-nav {
         width: auto;
         margin-top: 0;
         flex-direction: row;
-        gap: 8px;
+        gap: 6px;
     }
 
     .rail-btn {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
     }
 
     .rail-settings {
         margin-top: 0;
+    }
+
+    .topbar {
+        padding: 8px 12px;
+    }
+
+    .topbar-title {
+        font-size: 12px;
+    }
+
+    .topbar-icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .profile-pill {
+        width: 32px;
+        height: 32px;
+    }
+
+    .content-grid {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .hero-block {
+        margin-bottom: 12px;
+    }
+
+    .hero-block h1 {
+        font-size: clamp(20px, 6vw, 30px);
+    }
+
+    .hero-block p {
+        font-size: 12px;
     }
 
     .candidate-header-row {
@@ -917,8 +1071,13 @@ input {
     }
 
     .candidate-row {
-        grid-template-columns: 1fr;
-        gap: 10px;
+        grid-template-columns: 1fr auto auto;
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .candidate-city {
+        display: none;
     }
 
     .candidate-classification {
@@ -926,6 +1085,35 @@ input {
     }
 
     .candidate-score {
-        font-size: 42px;
+        font-size: 28px;
+    }
+
+    .candidate-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+
+    .candidate-name {
+        font-size: 15px;
+    }
+
+    .candidate-role {
+        font-size: 12px;
+    }
+
+    .detail-column {
+        max-height: none;
+    }
+
+    .detail-btn {
+        font-size: 13px;
+        height: 42px;
+    }
+
+    .explainability-card p,
+    .detail-essay p,
+    .detail-bullet span {
+        font-size: 13px;
     }
 }

@@ -32,27 +32,28 @@ export default function RightPanel({ candidate, onStatusChange }: Props) {
             <section className="explainability-card">
                 <div className="explainability-title-row">
                     <CircleAlert size={16} strokeWidth={2.2} />
-                    <span>EXPLAINABILITY ALERT</span>
+                    <span>АНАЛИЗ ИИ</span>
                 </div>
                 <p>
-                    AI recommendation for <strong>{candidate.full_name}</strong> is highly stable.
-                    Score <strong style={{ color: getScoreColor(candidate.total_score) }}>{candidate.total_score}</strong> is
-                    driven by {candidate.rationale.slice(0, 84)}...
+                    AI-рекомендация для <strong>{candidate.full_name}</strong> является{" "}
+                    {candidate.total_score >= 75 ? "высоконадёжной" : "умеренной"}.
+                    Оценка <strong style={{ color: getScoreColor(candidate.total_score) }}>{candidate.total_score}</strong> обусловлена{" "}
+                    {candidate.rationale.slice(0, 84)}...
                 </p>
             </section>
 
             <section className="candidate-detail-card">
                 <div className="detail-header">
-                    <span>CANDIDATE DETAILS</span>
+                    <span>ДЕТАЛИ КАНДИДАТА</span>
                     <span className="detail-id">ID: #INV-{candidate.id.slice(0, 8).toUpperCase()}</span>
                 </div>
 
-                <div className="detail-label">PERSONAL STATEMENT ESSAY</div>
+                <div className="detail-label">ЛИЧНОЕ ЭССЕ</div>
                 <div className="detail-essay">
                     <p>"{candidate.essay.slice(0, 110)}..."</p>
                 </div>
 
-                <div className="detail-label detail-rationale-title">RATIONALE FROM INVISION AI</div>
+                <div className="detail-label detail-rationale-title">ОБОСНОВАНИЕ ОТ INVISION AI</div>
                 <div className="detail-bullets">
                     {bullets.map((b, i) => (
                         <div key={i} className="detail-bullet">
@@ -84,9 +85,9 @@ export default function RightPanel({ candidate, onStatusChange }: Props) {
                 <div className="fairness-title-row">
                     <div>
                         <ShieldCheck size={15} strokeWidth={2.3} />
-                        <span>FAIRNESS &amp; METRICS</span>
+                        <span>FAIRNESS &amp; МЕТРИКИ</span>
                     </div>
-                    <span>100% TRANSPARENCY</span>
+                    <span>100% ПРОЗРАЧНОСТЬ</span>
                 </div>
 
                 <div className="fairness-bars" aria-hidden>
@@ -96,8 +97,8 @@ export default function RightPanel({ candidate, onStatusChange }: Props) {
                 </div>
 
                 <div className="fairness-footer">
-                    <span>BIAS CHECK</span>
-                    <span>NO DEVIATION FOUND</span>
+                    <span>ПРОВЕРКА ПРЕДВЗЯТОСТИ</span>
+                    <span>ОТКЛОНЕНИЙ НЕ НАЙДЕНО</span>
                 </div>
                 <div className="fairness-dot" />
             </section>
