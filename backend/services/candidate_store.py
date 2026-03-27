@@ -18,7 +18,19 @@ class CandidateStore:
     def _get_conn(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self._db_path, timeout=10)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA journal_mode = WAL")
+        # PRAGMA tuning can fail on some Docker/host filesystems.
+        # DB must still work even when these optimizations are unavailable.
+        try:
+            conn.execute("PRAGMA journal_mode = WAL")
+        except sqlite3.OperationalError:
+            try:
+                conn.execute("PRAGMA journal_mode = DELETE")
+            except sqlite3.OperationalError:
+                pass
+        try:
+            conn.execute("PRAGMA synchronous = NORMAL")
+        except sqlite3.OperationalError:
+            pass
         return conn
 
     def _init_db(self) -> None:

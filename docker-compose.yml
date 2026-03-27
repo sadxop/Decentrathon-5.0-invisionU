@@ -1,0 +1,16 @@
+services:
+  backend:
+    build: .
+    container_name: invisionu-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Keep SQLite persistent between restarts (portable/stable on Windows)
+      - backend_db_data:/app/backend/db
+    restart: unless-stopped
+
+volumes:
+  backend_db_data:
+
