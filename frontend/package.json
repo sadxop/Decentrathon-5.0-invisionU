@@ -6,7 +6,10 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "docker:build": "docker build -t invisionu-frontend .",
+        "docker:run": "docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=http://host.docker.internal:8000 invisionu-frontend",
+        "docker:up": "npm run docker:build && npm run docker:run"
     },
     "dependencies": {
         "next": "15.1.0",
