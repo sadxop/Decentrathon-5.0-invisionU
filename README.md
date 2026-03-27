@@ -17,3 +17,22 @@
   - `docker compose down`
 - Пересобрать после изменений:
   - `docker compose up --build`
+
+## Telegram-бот (MVP)
+
+Бот собирает анкету кандидата в диалоге и отправляет её в backend API (`/api/v1/analyze`).
+
+### Быстрый запуск
+
+1. Заполни `.env`:
+   - `TELEGRAM_BOT_TOKEN=...`
+   - `BACKEND_API_URL=http://127.0.0.1:8000/api/v1`
+2. Установи зависимости бота:
+   - `pip install -r bot/requirements.txt`
+3. Запусти бота:
+   - `python bot/main.py`
+
+Команды в Telegram:
+- `/start` — начать заполнение анкеты
+- `/status` — проверить текущий статус заявки
+- `/cancel` — отменить текущую анкету

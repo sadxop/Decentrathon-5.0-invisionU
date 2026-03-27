@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, Literal, List
+from typing import Optional, Literal, List, Dict
 
 
 #тут мы ждем от кандидата
@@ -9,6 +9,7 @@ class CandidateEntry(BaseModel):
     essay: str = Field(min_length=1, max_length=8000)
     achievements: str = Field(min_length=1, max_length=4000)
     experience_years: int = Field(ge=0, le=50)
+    telegram_id: Optional[int] = None
 
     @field_validator("full_name", "city", "essay", "achievements", mode="before")
     @classmethod
@@ -24,6 +25,8 @@ class ScoringResult(BaseModel):
     leadership_label: str
     rationale: str  #обьяснение оценки
     verdict: Optional[str] = None
+    breakdown: Optional[Dict[str, int]] = None
+    recommendation: Optional[str] = None
 
 
 class CandidateAnalysisResponse(BaseModel):
