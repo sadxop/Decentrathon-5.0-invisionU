@@ -1,15 +1,24 @@
 from fastapi import FastAPI
-from .models.candidate import CandidateEntry, ScoringResult
-from .services.scoring import evaluate_candidate
 
-app = FastAPI(title="inVisionU scoring system")
+from .api.v1 import router as v1_router
+from .api.legacy import router as legacy_router
+
+APP_VERSION = "1.0.0"
+
+app = FastAPI(title="inVisionU scoring system", version=APP_VERSION)
 
 @app.get("/")
 def read_root():
     return {"status": "Backend is online", "message": "Ready to score candidates"}
 
 
-@app.post("/analyze", response_model=ScoringResult)
-def analyze(candidate: CandidateEntry):
-    result = evaluate_candidate(candidate)
-    return result
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
+
+
+@app.get("/version")
+def version():
+    return {"version": APP_VERSION}
+app.include_router(v1_router)
+app.include_router(legacy_router)
