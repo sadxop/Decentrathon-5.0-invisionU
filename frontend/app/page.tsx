@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CircleHelp, Search, LayoutGrid, Users, BarChart3, FileText, Settings, MapPin, Gem, ShieldAlert, ArrowRight } from "lucide-react";
-import { addAuditLog, getCandidates } from "@/lib/storage";
+import { addAuditLog } from "@/lib/storage";
+import { listCandidates } from "@/lib/api";
 import { Candidate } from "@/lib/types";
 import RightPanel from "@/components/RightPanel";
 import ProfileMenu from "@/components/ProfileMenu";
@@ -59,13 +60,17 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            const list = getCandidates();
-            const initial = list.length > 0 ? list : DEMO_CANDIDATES;
-            setCandidates(initial);
-            if (initial.length > 0) setSelected(initial[0]);
-            setLoading(false);
-        }, 700);
+        listCandidates()
+            .then((list) => {
+                const initial = list.length > 0 ? list : DEMO_CANDIDATES;
+                setCandidates(initial);
+                if (initial.length > 0) setSelected(initial[0]);
+            })
+            .catch(() => {
+                setCandidates(DEMO_CANDIDATES);
+                setSelected(DEMO_CANDIDATES[0]);
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     useEffect(() => {

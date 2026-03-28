@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, BarChart3, TrendingUp, Users, ShieldAlert } from "lucide-react";
 import { Candidate } from "@/lib/types";
-import { getCandidates } from "@/lib/storage";
+import { listCandidates } from "@/lib/api";
 
 const DEMO_CANDIDATES: Candidate[] = [
     { id: "demo-1", full_name: "Berik Saparov", city: "Kyzylorda", essay: "", achievements: "", experience_years: 8, total_score: 98, leadership_label: "ТОП ТАЛАНТ", rationale: "", status: "approved", created_at: new Date().toISOString() },
@@ -16,8 +16,9 @@ export default function AnalyticsPage() {
     const [candidates, setCandidates] = useState<Candidate[]>([]);
 
     useEffect(() => {
-        const list = getCandidates();
-        setCandidates(list.length > 0 ? list : DEMO_CANDIDATES);
+        listCandidates()
+            .then((list) => setCandidates(list.length > 0 ? list : DEMO_CANDIDATES))
+            .catch(() => setCandidates(DEMO_CANDIDATES));
     }, []);
 
     const stats = useMemo(() => {

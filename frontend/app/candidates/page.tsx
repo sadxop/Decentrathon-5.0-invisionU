@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Search, MapPin, Gem, ShieldAlert, ArrowUpDown, ChevronLeft, ChevronRight, ChevronDown, LayoutGrid, Users, BarChart3, FileText, Settings, CircleHelp } from "lucide-react";
-import { addAuditLog, getCandidates } from "@/lib/storage";
+import { addAuditLog } from "@/lib/storage";
+import { listCandidates } from "@/lib/api";
 import { Candidate } from "@/lib/types";
 import { SkeletonRow } from "@/components/Skeleton";
 import ProfileMenu from "@/components/ProfileMenu";
@@ -92,11 +93,10 @@ export default function CandidatesPage() {
     }, []);
 
     useEffect(() => {
-        setTimeout(() => {
-            const list = getCandidates();
-            setCandidates(list.length > 0 ? list : DEMO_CANDIDATES);
-            setLoading(false);
-        }, 600);
+        listCandidates()
+            .then((list) => setCandidates(list.length > 0 ? list : DEMO_CANDIDATES))
+            .catch(() => setCandidates(DEMO_CANDIDATES))
+            .finally(() => setLoading(false));
     }, []);
 
     const processed = useMemo(() => {

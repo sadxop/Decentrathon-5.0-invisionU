@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, CheckCircle, XCircle, Clock, Gem, ShieldAlert } from "lucide-react";
-import { getCandidates, updateStatus } from "@/lib/storage";
+import { getCandidateById, setDecision } from "@/lib/api";
 import { Candidate } from "@/lib/types";
 import { useToast } from "@/lib/toast";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from "recharts";
@@ -27,20 +27,37 @@ const STATUS_COLORS: Record<string, string> = { pending: "#60a5fa", approved: "#
 export default function CandidateProfile() {
     const { id } = useParams<{ id: string }>();
     const [candidate, setCandidate] = useState<Candidate | null>(null);
+    const [loading, setLoading] = useState(true);
     const { toast } = useToast();
 
     useEffect(() => {
-        const list = getCandidates();
-        const found = list.find((c) => c.id === id);
-        setCandidate(found ?? null);
+        if (!id) return;
+        getCandidateById(id)
+            .then((found) => setCandidate(found))
+            .finally(() => setLoading(false));
     }, [id]);
 
-    function handleStatus(status: Candidate["status"]) {
+    async function handleStatus(status: Candidate["status"]) {
         if (!candidate) return;
-        updateStatus(candidate.id, status);
+        const decisionMap: Record<Candidate["status"], "Approved" | "Interview" | "Pending"> = {
+            approved: "Approved",
+            interview: "Interview",
+            pending: "Pending",
+        };
+        try {
+            await setDecision(candidate.id, decisionMap[status]);
+        } catch { /* ignore */ }
         setCandidate((p) => p ? { ...p, status } : p);
         const labels: Record<string, string> = { approved: "Кандидат одобрен", interview: "Отправлен на интервью", pending: "Статус сброшен" };
         toast(labels[status], status === "approved" ? "success" : "info");
+    }
+
+    if (loading) {
+        return (
+            <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#060708", color: "#6b7280", fontFamily: "Rajdhani,sans-serif", fontSize: 16 }}>
+                Загрузка...
+            </div>
+        );
     }
 
     if (!candidate) {

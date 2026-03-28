@@ -8,6 +8,7 @@ export interface Candidate {
     total_score: number;
     leadership_label: string;
     rationale: string;
+    breakdown?: Record<string, number> | null;
     status: "pending" | "approved" | "interview";
     created_at: string;
 }

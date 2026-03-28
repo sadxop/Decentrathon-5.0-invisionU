@@ -91,6 +91,26 @@ class CandidateStore:
             ).fetchall()
             return [_row_to_dict(r) for r in rows]
 
+    def delete_one(self, candidate_id: str) -> bool:
+        with engine.begin() as conn:
+            result = conn.execute(
+                delete(candidates_table).where(
+                    candidates_table.c.candidate_id == candidate_id
+                )
+            )
+            return result.rowcount > 0
+
+    def update_status(self, candidate_id: str, status: str) -> bool:
+        decision_map = {"approved": "Approved", "interview": "Interview", "pending": None}
+        decision = decision_map.get(status.lower())
+        with engine.begin() as conn:
+            result = conn.execute(
+                update(candidates_table)
+                .where(candidates_table.c.candidate_id == candidate_id)
+                .values(final_decision=decision)
+            )
+            return result.rowcount > 0
+
     def delete_all(self) -> int:
         with engine.begin() as conn:
             result = conn.execute(delete(candidates_table))

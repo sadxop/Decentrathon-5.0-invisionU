@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { analyzeCandidate, CandidateEntry } from "@/lib/api";
 import { Candidate } from "@/lib/types";
-import { saveCandidate } from "@/lib/storage";
 
 interface Props {
     onClose: () => void;
@@ -37,14 +36,7 @@ export default function AddCandidateModal({ onClose, onAdded }: Props) {
         setLoading(true);
         setError(null);
         try {
-            const result = await analyzeCandidate(form);
-            const candidate: Candidate = {
-                id: crypto.randomUUID(),
-                ...form, ...result,
-                status: "pending",
-                created_at: new Date().toISOString(),
-            };
-            saveCandidate(candidate);
+            const candidate: Candidate = await analyzeCandidate(form);
             onAdded(candidate);
             onClose();
         } catch {

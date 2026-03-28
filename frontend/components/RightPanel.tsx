@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Candidate } from "@/lib/types";
-import { addAuditLog, addNotification, updateStatus } from "@/lib/storage";
+import { addAuditLog, addNotification } from "@/lib/storage";
+import { setDecision } from "@/lib/api";
 import { useToast } from "@/lib/toast";
 import { CircleAlert, CircleCheck, ShieldCheck } from "lucide-react";
 
@@ -27,7 +28,10 @@ export default function RightPanel({ candidate, onStatusChange }: Props) {
         setPendingStatus(status);
 
         await new Promise((resolve) => setTimeout(resolve, 280));
-        updateStatus(candidate.id, status);
+        const decisionMap: Record<Candidate["status"], "Approved" | "Interview" | "Pending"> = {
+            approved: "Approved", interview: "Interview", pending: "Pending",
+        };
+        try { await setDecision(candidate.id, decisionMap[status]); } catch { /* ui still updates */ }
         onStatusChange(candidate.id, status);
 
         const statusText = status === "approved" ? "ОДОБРЕН" : status === "interview" ? "НА ИНТЕРВЬЮ" : "НА РАССМОТРЕНИИ";
